@@ -1,0 +1,102 @@
+CREATE DATABASE library_query_lab;
+USE library_query_lab;
+
+CREATE TABLE MEMBER (
+    MemberID INT PRIMARY KEY AUTO_INCREMENT,
+    FullName VARCHAR(50) NOT NULL,
+    Email VARCHAR(50) NOT NULL UNIQUE,
+    Age INT CHECK (Age >= 12),
+    Phone VARCHAR(15) NOT NULL DEFAULT 'N/A'
+);
+
+CREATE TABLE BOOK (
+    BookID INT PRIMARY KEY AUTO_INCREMENT,
+    Title VARCHAR(50) NOT NULL,
+    ISBN VARCHAR(20) NOT NULL UNIQUE,
+    Price DECIMAL(8,2) CHECK (Price >= 0),
+    Availability ENUM('AVAILABLE','BORROWED') DEFAULT 'AVAILABLE'
+);
+
+CREATE TABLE BORROW (
+    BorrowID INT PRIMARY KEY AUTO_INCREMENT,
+    MemberID INT,
+    BookID INT,
+    BorrowDate DATE NOT NULL,
+    FOREIGN KEY (MemberID) REFERENCES MEMBER(MemberID),
+    FOREIGN KEY (BookID) REFERENCES BOOK(BookID)
+);
+
+INSERT INTO MEMBER (FullName, Email, Age, Phone) VALUES
+('Amin', 'a1@mail.com', 22, '0171'),
+('Bashir', 'b1@mail.com', 19, '0182'),
+('Arman', 'a2@mail.com', 25, '0193'),
+('Noyon', 'n1@mail.com', 17, '0164'),
+('Sajid', 's1@mail.com', 21, '0155'),
+('Alam', 'a3@mail.com', 30, '0146'),
+('Tanvir', 't1@mail.com', 15, DEFAULT),
+('Jibon', 'j1@mail.com', 28, '0137');
+
+INSERT INTO BOOK (Title, ISBN, Price, Availability) VALUES
+('DS', 'B001', 1200, 'AVAILABLE'),
+('DB', 'B002', 1500, 'BORROWED'),
+('Python', 'B003', 800, 'AVAILABLE'),
+('OS', 'B004', 2000, 'BORROWED'),
+('Net', 'B005', 1800, 'AVAILABLE'),
+('DataSci', 'B006', 2200, 'AVAILABLE'),
+('ML', 'B007', 2500, 'BORROWED'),
+('Web', 'B008', 600, 'AVAILABLE');
+
+INSERT INTO BORROW (MemberID, BookID, BorrowDate) VALUES
+(1,2,'2026-01-01'),
+(2,4,'2026-01-05'),
+(3,7,'2026-01-10'),
+(4,2,'2026-01-12'),
+(5,4,'2026-01-15'),
+(6,7,'2026-01-18'),
+(1,4,'2026-01-20'),
+(2,2,'2026-01-22'),
+(3,7,'2026-01-25'),
+(8,1,'2026-01-28');
+
+SELECT * FROM MEMBER;
+SELECT * FROM BOOK;
+SELECT * FROM BORROW;
+
+SELECT DISTINCT Availability FROM BOOK;
+
+SELECT * FROM MEMBER WHERE Age >= 18;
+
+SELECT * FROM BOOK WHERE Price BETWEEN 500 AND 2000;
+
+SELECT * FROM BOOK WHERE Availability IN ('AVAILABLE','BORROWED');
+
+SELECT * FROM MEMBER WHERE FullName LIKE 'A%' OR FullName LIKE '%n';
+
+SELECT * FROM MEMBER WHERE Phone <> 'N/A' AND Age > 20;
+
+SELECT * FROM MEMBER WHERE Age NOT BETWEEN 12 AND 17;
+
+SELECT * FROM BOOK WHERE Title LIKE '%Data%' OR Title LIKE '%DB%';
+
+SELECT * FROM BOOK ORDER BY Price DESC LIMIT 3;
+
+SELECT * FROM BOOK ORDER BY Price ASC LIMIT 2;
+
+SELECT 
+ (SELECT COUNT(*) FROM MEMBER) AS Members,
+ (SELECT COUNT(*) FROM BOOK) AS Books,
+ (SELECT COUNT(*) FROM BORROW) AS Borrows;
+
+SELECT 
+ AVG(Price) AS AvgPrice,
+ MIN(Price) AS MinPrice,
+ MAX(Price) AS MaxPrice
+FROM BOOK;
+
+SELECT Availability, COUNT(*) 
+FROM BOOK 
+GROUP BY Availability;
+
+SELECT MemberID, COUNT(*) 
+FROM BORROW 
+GROUP BY MemberID;
